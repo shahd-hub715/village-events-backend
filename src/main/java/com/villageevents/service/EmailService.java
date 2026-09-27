@@ -22,7 +22,7 @@ public class EmailService {
 
     public void sendEmail(String subject, String html) {
         CreateEmailOptions email = CreateEmailOptions.builder()
-                .from("Village Events <onboarding@resend.dev>")
+                .from("مناسباتنا <notifications@monasbatna.com>")
                 .to(adminEmail)
                 .subject(subject)
                 .html(html)
