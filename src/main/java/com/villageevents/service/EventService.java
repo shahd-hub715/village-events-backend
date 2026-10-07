@@ -2,6 +2,7 @@ package com.villageevents.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class EventService {
 
     public EventSubmissionResponse saveEvent(Event event) {
 
-        if (event.getEventDate().isBefore(LocalDate.now())) {
+        if (event.getEventDate().isBefore(LocalDate.now(ZoneId.of("Asia/Jerusalem")))) {
             throw new IllegalArgumentException("Event date cannot be in the past");
         }
 
@@ -93,7 +94,11 @@ public class EventService {
 
     public List<PublicEventResponse> getApprovedEventsByYear(int year) {
 
-        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Jerusalem"));
+        LocalDate yearStart = LocalDate.of(year, 1, 1);
+
+        // Hide past events publicly; events dated today remain visible all day.
+        LocalDate startDate = yearStart.isBefore(today) ? today : yearStart;
         LocalDate endDate = LocalDate.of(year, 12, 31);
 
         List<Event> events =
@@ -147,7 +152,7 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        if (updatedEvent.getEventDate().isBefore(LocalDate.now())) {
+        if (updatedEvent.getEventDate().isBefore(LocalDate.now(ZoneId.of("Asia/Jerusalem")))) {
             throw new IllegalArgumentException("Event date cannot be in the past");
         }
 
